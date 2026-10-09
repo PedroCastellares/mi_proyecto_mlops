@@ -1,33 +1,24 @@
-# LINEA 1: Importamos la librería Pandas. 
-# Le ponemos el apodo 'pd' para escribir menos código cuando llamemos a sus funciones.
+# LINEA 1: Importamos la librería Pandas para manipular tablas de datos.
 import pandas as pd
 
-# LINEA 4: Definimos nuestra función (nuestra "máquina").
-# No requiere que le pasemos ningún dato inicial entre los paréntesis para arrancar.
 def cargar_datos_casas():
+    """Simula la ingesta de datos leyendo un archivo CSV real custodiado por DVC.
+
+    Returns:
+        pd.DataFrame: Tabla estructurada con los datos cargados desde el archivo.
     """
-    Simula la ingesta de datos de un lote de casas para el modelo.
-    """
+    # LINEA 10: Definimos la ruta exacta donde vive nuestro dataset físico.
+    # El archivo fue creado en la carpeta 'data/' en el Paso 29.
+    ruta_dataset = "data/datos_casas.csv"
     
-    # LINEA 11: Mostramos un mensaje informativo en la terminal.
-    # En MLOps esto ayuda a saber en qué etapa va el sistema si algo se congela.
-    print("📥 Iniciando la ingesta de datos...")
+    print(f"📥 Iniciando la ingesta de datos desde: {ruta_dataset}...")
     
-    # LINEA 15: Creamos un diccionario (una estructura de datos clave:valor).
-    # Aquí agregamos los números reales que faltaban dentro de las listas [].
-    datos_crudos = {
-        "habitaciones":[1, 2, 3, 4, 5],
-        "precio_real": [115000, 130000, 145000, 160000, 175000]
-    }
+    # LINEA 15: Usamos la función nativa de Pandas '.read_csv()' para abrir el archivo.
+    # Esta función lee el archivo en disco y lo transforma automáticamente en un DataFrame.
+    df_casas = pd.read_csv(ruta_dataset)
     
-    # LINEA 22: Usamos Pandas para transformar el diccionario en un 'DataFrame'.
-    # Un DataFrame es, literalmente, una tabla estructurada con filas y columnas (como un Excel en memoria).
-    df_casas = pd.DataFrame(datos_crudos)
+    # LINEA 19: Medimos la cantidad de filas cargadas usando 'len()'.
+    print(f"✅ Ingesta completada. Se cargaron {len(df_casas)} registros desde el CSV.")
     
-    # LINEA 26: Medimos la longitud de la tabla usando 'len()' para confirmar cuántas filas cargamos.
-    # Usamos un f-string para inyectar ese número dinámicamente en el mensaje.
-    print(f"✅ Ingesta completada. Se cargaron {len(df_casas)} registros.")
-    
-    # LINEA 30: Devolvemos la tabla de Pandas como el "producto terminado".
-    # Cualquier otro archivo que llame a esta función recibirá esta tabla lista para usarse.
+    # LINEA 22: Devolvemos la tabla lista para ser consumida por el modelo de IA.
     return df_casas
