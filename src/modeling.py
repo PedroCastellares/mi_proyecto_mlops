@@ -1,32 +1,35 @@
-# LINEA 1: Importamos la clase de Regresión Lineal de Scikit-Learn.
-# Esta librería contiene el algoritmo matemático que aprenderá de los datos.
 from sklearn.linear_model import LinearRegression
+import mlflow
 
-# LINEA 5: Definimos nuestra función de entrenamiento.
-# Recibe como "materia prima" la tabla de datos (df) que procesó el archivo de ingesta.
 def entrenar_modelo_casas(df):
-    """
-    Entrena un modelo matemático de Regresión Lineal usando la tabla de datos provista.
-    """
-    print("\n🤖 Iniciando el entrenamiento del modelo de IA...")
-    
-    # LINEA 12: Separamos nuestras características (X) de nuestro objetivo a predecir (y).
-    # 'X' debe ser una matriz de dos dimensiones, por eso usamos doble corchete [["habitaciones"]].
+    """Entrena dos versiones del modelo con configuraciones distintas y las trackea en MLflow."""
     X = df[["habitaciones"]]
     y = df["precio_real"]
     
-    # LINEA 17: Creamos una instancia limpia del algoritmo (nuestro cerebro artificial vacío).
-    modelo = LinearRegression()
-    
-    # LINEA 20: La magia del Machine Learning ocurre aquí.
-    # El método '.fit()' hace que el algoritmo ajuste sus parámetros matemáticos internos 
-    # analizando los datos reales de X e y. El modelo queda "entrenado".
-    modelo.fit(X, y)
-    
-    # LINEA 24: Calculamos la precisión del entrenamiento (R² score).
-    # Nos da un número entre 0 y 1 para saber qué tan bien entendió el modelo el patrón de los datos.
-    precision = modelo.score(X, y)
-    print(f"🎯 ¡Modelo entrenado con éxito! Precisión del ajuste (R²): {precision:.2f}")
-    
-    # LINEA 28: Devolvemos el objeto del modelo entrenado listo para predecir precios en producción.
-    return modelo
+    # 🧪 EXPERIMENTO 1: Modelo Base (Con Intercepto)
+    print("\n🤖 [Run 1] Entrenando Modelo Base (fit_intercept=True)...")
+    with mlflow.start_run(run_name="Experimento_Base"):
+        modelo_1 = LinearRegression(fit_intercept=True)
+        modelo_1.fit(X, y)
+        precision_1 = modelo_1.score(X, y)
+        
+        mlflow.log_param("fit_intercept", True)
+        mlflow.log_metric("r2_score", precision_1)
+        mlflow.sklearn.log_model(modelo_1, artifact_path="modelo_casas")
+        print(f"🎯 [Run 1] Completado. Precisión (R²): {precision_1:.2f}")
+
+    # 🧪 EXPERIMENTO 2: Modelo Modificado (Sin Intercepto)
+    # Obligamos a la línea matemática a cruzar por el cero absoluto de la gráfica.
+    print("\n🤖 [Run 2] Entrenando Modelo Alternativo (fit_intercept=False)...")
+    with mlflow.start_run(run_name="Experimento_Sin_Intercepto"):
+        modelo_2 = LinearRegression(fit_intercept=False)
+        modelo_2.fit(X, y)
+        precision_2 = modelo_2.score(X, y)
+        
+        mlflow.log_param("fit_intercept", False)
+        mlflow.log_metric("r2_score", precision_2)
+        mlflow.sklearn.log_model(modelo_2, artifact_path="modelo_casas")
+        print(f"🎯 [Run 2] Completado. Precisión (R²): {precision_2:.2f}")
+        
+    return modelo_1
+
