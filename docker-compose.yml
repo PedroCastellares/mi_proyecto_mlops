@@ -1,0 +1,34 @@
+# LINEA 1: Definimos la versión de la sintaxis de Docker Compose
+version: "3.8"
+
+# LINEA 4: Definimos el equipo de servicios (los contenedores que trabajarán juntos)
+services:
+
+  # 🤖 SERVICIO 1: Tu Pipeline de Inteligencia Artificial
+  pipeline:
+    build: .
+    environment:
+      - MLFLOW_ALLOW_FILE_STORE=true
+    # Conectamos un volumen nativo de Docker Compose para guardar los experimentos
+    volumes:
+      - mlruns_data:/app/mlruns
+    # Le decimos que su comando principal al despertar será correr el entrenamiento
+    command: python src/main.py
+
+  # 📊 SERVICIO 2: El Servidor Visual de MLflow
+  mlflow_ui:
+    build: .
+    environment:
+      - MLFLOW_ALLOW_FILE_STORE=true
+    # Abrimos el túnel de comunicación directo al puerto 5000 de tu laptop HP
+    ports:
+      - "5000:5000"
+    # Compartimos el mismo volumen de datos para que vea los experimentos en tiempo real
+    volumes:
+      - mlruns_data:/app/mlruns
+    # Su comando principal será mantener encendida la interfaz gráfica web
+    command: mlflow server --backend-store-uri ./mlruns --host 0.0.0.0 --port 5000
+
+# LINEA 31: Creamos el almacén de datos persistente e independiente de OneDrive
+volumes:
+  mlruns_data:
