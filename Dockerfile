@@ -17,5 +17,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # LINEA 18: Copiamos todo el resto de tus carpetas locales (src, data, tests, pytest.ini) al contenedor.
 COPY . .
 
-# LINEA 21: La orden de ejecución final. Cuando la cápsula se encienda, correrá de forma automática tu pipeline.
-CMD ["python", "src/main.py"]
+# Modificamos la línea final para levantar el servidor web dentro de la cápsula
+CMD ["mlflow", "server", "--backend-store-uri", "./mlruns", "--host", "0.0.0.0", "--port", "5000"]
